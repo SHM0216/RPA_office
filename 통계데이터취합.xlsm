@@ -1,0 +1,40 @@
+Option Explicit
+Sub 통계데이터취합()
+
+    Dim 선택파일 As Variant
+    Dim i As Integer
+    Dim 복사파일 As Workbook
+    Dim 취합시트 As Worksheet
+    Dim 행번호 As Integer
+    
+    Set 취합시트 = ThisWorkbook.Sheets(1)
+    
+    On Error GoTo 에러처리
+    
+    선택파일 = Application.GetOpenFilename(Filefilter:="엑셀파일(*.xlsx*),*.xlsx*", MultiSelect:=True)
+    
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    
+            For i = 1 To UBound(선택파일)
+                Set 복사파일 = Workbooks.Open(Filename:=선택파일(i), ReadOnly:=True)
+                
+                행번호 = 취합시트.Range("A1").End(xlDown).Row + 1
+        
+                With 복사파일.Sheets(1)
+                    .Range(.Range("A2").End(xlDown), .Range("A2").End(xlToRight)).Copy
+                End With
+                취합시트.Cells(행번호, 1).PasteSpecial
+                복사파일.Close
+            Next i
+           
+            Application.ScreenUpdating = True
+            Application.DisplayAlerts = True
+            
+            MsgBox "파일 취합이 완료되었습니다"
+            Exit Sub
+        
+에러처리:
+        MsgBox "파일을 선택하지 않았습니다"
+        
+End Sub
